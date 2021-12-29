@@ -9,30 +9,30 @@
 
 # minial standard full
 EDITION="standard"
-VERSION="1.8.1"
+VERSION="1.11.1"
 SDKVERSION=`xcrun --sdk iphoneos --show-sdk-version 2> /dev/null`
 MIN_SDK_VERSION_FLAG="-miphoneos-version-min=7.0"
 BASEPATH=$(cd `dirname $0`; pwd)
-CURRENTPATH="/tmp/poco"
-ARCHS="i686 x86_64 armv7 armv7s arm64"
+CURRENTPATH="${BASEPATH}/tmp/poco"
+ARCHS="x86_64 armv7 armv7s arm64"
 LIBS="Foundation JSON Net Util XML"
 DEVELOPER=`xcode-select -print-path`
 # DEBUG="false"
 
 if [ ${EDITION} == "minimal" ] ; then
-  EDITIONPARAM="--minimal"
+  OPMITPARAM="--omit=Data/PostgreSQL,Data/ODBC,Data/MySQL,MongoDB,PDF,CppParser,Redis,Crypto"
   LIBS="Foundation JSON Net Util XML"
 elif [ ${EDITION} == "standard" ] ; then
-  EDITIONPARAM="--typical"
-  LIBS="Foundation JSON Net Util XML Crypto Data NetSSL Redis Zip DataSQLite"
+  OPMITPARAM="--omit=Data/PostgreSQL,Data/ODBC,Data/MySQL,MongoDB,PDF,CppParser,Redis"
+  LIBS="Foundation JSON Net Util XML Crypto Data NetSSL Zip DataSQLite"
 # elif [ ${EDITION} == "standard" ] ; then
-#   EDITIONPARAM="--everything"
 #   LIBS="Foundation JSON Net Util XML Crypto Data NetSSL Redis Zip DataSQLite"
+#   OPMITPARAM="--omit=Data/PostgreSQL,Data/ODBC,Data/MySQL,MongoDB,PDF,CppParser,Redis"
 fi
 
 if [ ! -f "archive/poco/${VERSION}/poco-${VERSION}-all.tar.gz" ]; then
   mkdir -p "archive/poco/${VERSION}/"
-  wget -o "archive/poco/${VERSION}/poco-${VERSION}-all.tar.gz" "https://pocoproject.org/releases/poco-${VERSION}/poco-${VERSION}-all.tar.gz"
+  curl https://pocoproject.org/releases/poco-${VERSION}/poco-${VERSION}-all.tar.gz --outpu archive/poco/${VERSION}/poco-${VERSION}-all.tar.gz
 fi
 
 mkdir -p "${CURRENTPATH}"
@@ -68,7 +68,10 @@ do
     mkdir -p "${CURRENTPATH}/opt/${PLATFORM}${SDKVERSION}-${ARCH}.sdk"
     LOG="${CURRENTPATH}/opt/${PLATFORM}${SDKVERSION}-${ARCH}.sdk/build-POCO-${VERSION}.log"
 
-    ./configure --prefix=${CURRENTPATH}/opt/${PLATFORM}${SDKVERSION}-${ARCH}.sdk --config=${PLATFORM}-${ARCH} ${EDITIONPARAM} --no-tests --no-samples --include-path=${BASEPATH}/openssl/opensslIncludes --library-path=${BASEPATH}/openssl/lib >> "${LOG}" 2>&1
+    echo "./configure --prefix=${CURRENTPATH}/opt/${PLATFORM}${SDKVERSION}-${ARCH}.sdk --config=${PLATFORM}-${ARCH} ${OPMITPARAM} --no-tests --no-samples --include-path=${BASEPATH}/openssl/opensslIncludes --library-path=${BASEPATH}/openssl/lib --static"
+    ./configure --prefix=${CURRENTPATH}/opt/${PLATFORM}${SDKVERSION}-${ARCH}.sdk --config=${PLATFORM}-${ARCH} ${OPMITPARAM} --no-tests --no-samples --include-path=${BASEPATH}/openssl/opensslIncludes --library-path=${BASEPATH}/openssl/lib --static >> "${LOG}" 2>&1
+    
+    echo "Building..."
     make -s -j4 >> "${LOG}" 2>&1
     make install >> "${LOG}" 2>&1
 done
