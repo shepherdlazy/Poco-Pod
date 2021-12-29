@@ -4,3 +4,5 @@ openssl
 LICENSE
 README
 tmp
+standard/lib
+standard/PocoIncludes
