@@ -1,3 +1,8 @@
 archive
 openssl
 *tar.gz
+LICENSE
+README
+tmp
+standard/lib
+standard/PocoIncludes

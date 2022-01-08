@@ -12,8 +12,8 @@ SDKVERSION=`xcrun --sdk iphoneos --show-sdk-version 2> /dev/null`
 MIN_SDK_VERSION_FLAG="-miphoneos-version-min=7.0"
 BASEPATH=$(cd `dirname $0`; pwd)
 BASEPATH="${BASEPATH}/openssl"
-CURRENTPATH="/tmp/openssl"
-ARCHS="i686 x86_64 armv7 armv7s arm64"
+CURRENTPATH="${BASEPATH}/tmp/openssl"
+ARCHS="x86_64 armv7 armv7s arm64"
 DEVELOPER=`xcode-select -print-path`
 
 mkdir -p "${CURRENTPATH}/bin"
@@ -52,6 +52,9 @@ do
     make all install_sw >> "${LOG}" 2>&1
     make clean >> "${LOG}" 2>&1
 done
+
+echo "LIBSSL: ${LIPO_LIBSSL}"
+echo "LIBCRYPTO: ${LIPO_LIBCRYPTO}"
 
 echo "Build library..."
 rm -rf "${BASEPATH}/lib/"
