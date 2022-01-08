@@ -30,15 +30,23 @@ elif [ ${EDITION} == "standard" ] ; then
 #   OPMITPARAM="--omit=Data/PostgreSQL,Data/ODBC,Data/MySQL,MongoDB,PDF,CppParser,Redis"
 fi
 
-if [ ! -f "archive/poco/${VERSION}/poco-${VERSION}-all.tar.gz" ]; then
-  mkdir -p "archive/poco/${VERSION}/"
-  curl https://pocoproject.org/releases/poco-${VERSION}/poco-${VERSION}-all.tar.gz --outpu archive/poco/${VERSION}/poco-${VERSION}-all.tar.gz
-fi
 
 mkdir -p "${CURRENTPATH}"
 mkdir -p "${CURRENTPATH}/opt"
-tar -xzf "archive/poco/${VERSION}/poco-${VERSION}-all.tar.gz" -C "${CURRENTPATH}"
-cd "${CURRENTPATH}/poco-${VERSION}-all"
+
+
+if [ -z "$POCO_FOLDER" ]
+then
+  if [ ! -f "archive/poco/${VERSION}/poco-${VERSION}-all.tar.gz" ]; then
+    mkdir -p "archive/poco/${VERSION}/"
+    curl https://pocoproject.org/releases/poco-${VERSION}/poco-${VERSION}-all.tar.gz --outpu archive/poco/${VERSION}/poco-${VERSION}-all.tar.gz
+  fi
+
+  tar -xzf "archive/poco/${VERSION}/poco-${VERSION}-all.tar.gz" -C "${CURRENTPATH}"
+  cd "${CURRENTPATH}/poco-${VERSION}-all"
+else
+  cd "${POCO_FOLDER}"
+fi
 
 cp -RL LICENSE ${BASEPATH}/${EDITION}/LICENSE
 cp -RL README ${BASEPATH}/${EDITION}/README
